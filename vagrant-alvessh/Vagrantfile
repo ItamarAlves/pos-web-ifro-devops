@@ -1,0 +1,51 @@
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "ubuntu/focal64"
+  config.vm.box_check_update = true
+  config.vm.synced_folder "www", "/var/www/html/"
+
+  # APACHE SERVICE
+  config.vm.define "webapp" do |webapp|
+      webapp.vm.hostname = "webapp"
+      webapp.vm.network "private_network", ip: "192.168.56.3"
+      webapp.vm.provider "virtualbox" do |v|
+          v.name = "webapp"
+          v.memory = 2048
+          v.cpus = 2
+          v.linked_clone = true
+          v.gui = false
+      end
+
+      webapp.vm.provision "shell", inline: <<-SHELL 
+        sudo apt update
+        sudo apt upgrade -y
+
+        sudo apt install -y php7.4 libapache2-mod-php7.4 openssl php-imagick php7.4-common php7.4-curl php7.4-gd php7.4-imap php7.4-intl php7.4-json php7.4-ldap php7.4-mbstring php7.4-pgsql php-ssh2 php7.4-xml php7.4-zip unzip
+
+        sudo apt install apache2 -y
+        sudo systemctl restart apache2
+      SHELL
+  end
+
+  # MARIADB 
+  config.vm.define "postgresql" do |postgresql|
+    postgresql.vm.hostname = "zk1"
+    postgresql.vm.network "private_network", ip: "192.168.56.4"
+    postgresql.vm.provider "virtualbox" do |v|
+          v.name = "postgresql"
+          v.memory = 2048
+          v.cpus = 1
+          v.linked_clone = true
+          v.gui = false
+      end
+      postgresql.vm.provision "shell", inline: <<-SHELL 
+        sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+
+        wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+
+        sudo apt update -y
+
+        sudo apt-get -y install postgresql
+      SHELL
+  end
+end
