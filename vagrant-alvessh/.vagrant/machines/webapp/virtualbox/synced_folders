@@ -1,1 +1,0 @@
-{"virtualbox":{"/var/www/html/":{"guestpath":"/var/www/html","hostpath":"/home/alvessh/Documentos/Projetos/pos-web-ifro/devops/vagrant-alvessh/www","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"/home/alvessh/Documentos/Projetos/pos-web-ifro/devops/vagrant-alvessh","disabled":false,"__vagrantfile":true}}}
